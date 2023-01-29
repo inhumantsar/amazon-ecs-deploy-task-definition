@@ -25,6 +25,7 @@ async function runTask(ecs, clusterName, taskDefArn, waitForMinutes) {
   core.info('Running task')
 
   const waitForTask = core.getInput('wait-for-task-stopped', { required: false }) || 'false';
+  const assignPublicIp = core.getInput('run-task-assign-public-ip', { required: false }) || 'DISABLED';
   const startedBy = core.getInput('run-task-started-by', { required: false }) || 'GitHub-Actions';
   const launchType = core.getInput('run-task-launch-type', { required: false }) || 'FARGATE';
   const subnetIds = core.getInput('run-task-subnets', { required: false }) || '';
@@ -39,6 +40,8 @@ async function runTask(ecs, clusterName, taskDefArn, waitForMinutes) {
   if (securityGroupIds != "") {
     awsvpcConfiguration["securityGroups"] = securityGroupIds.split(',')
   }
+
+  awsvpcConfiguration["assignPublicIp"] = assignPublicIp;
 
   const runTaskResponse = await ecs.runTask({
     startedBy: startedBy,
